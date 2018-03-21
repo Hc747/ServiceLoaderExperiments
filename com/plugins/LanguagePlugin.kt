@@ -8,8 +8,9 @@ import java.util.*
  * @version 1.0
  * @since 21/3/18
  */
-annotation class PluginMetaData(val name: String, val description: String, val authors: Array<String>)
 
+@Target(AnnotationTarget.CLASS)
+annotation class PluginMetaData(val name: String, val description: String, val authors: Array<String>)
 
 @PluginMetaData(name = "LanguagePlugin", description = "The base language plugin interface.", authors = ["Hc747"])
 interface LanguagePlugin {
@@ -20,6 +21,7 @@ interface LanguagePlugin {
 
 }
 
+@PluginMetaData(name = "EnglishPlugin", description = "A language plugin for English", authors = ["Hc747"])
 class EnglishPlugin : LanguagePlugin {
 
     override val language = "English"
@@ -28,6 +30,7 @@ class EnglishPlugin : LanguagePlugin {
 
 }
 
+@PluginMetaData(name = "FrenchPlugin", description = "A language plugin for French", authors = ["Hc747"])
 class FrenchPlugin : LanguagePlugin {
 
     override val language = "French"
@@ -47,8 +50,17 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         PluginService.plugins.forEach {
-            println("A common greeting in ${it.language} is ${it.greeting}!")
+            printMeta(it::class.java.getAnnotation(PluginMetaData::class.java))
+            printPlugin(it)
         }
+    }
+
+    private fun printMeta(meta: PluginMetaData) {
+        println("Plugin [name: ${meta.name}, description: ${meta.description}, author(s): ${Arrays.toString(meta.authors)}]")
+    }
+
+    private fun printPlugin(plugin: LanguagePlugin) {
+        println("A common greeting in ${plugin.language} is ${plugin.greeting}!")
     }
 
 }
