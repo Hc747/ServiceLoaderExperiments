@@ -12,12 +12,19 @@ import java.util.*
 @Target(AnnotationTarget.CLASS)
 annotation class PluginMetaData(val name: String, val description: String, val authors: Array<String>)
 
-@PluginMetaData(name = "LanguagePlugin", description = "The base language plugin interface.", authors = ["Hc747"])
+@PluginMetaData(name = "LanguagePlugin", description = "The base language plugin interface", authors = ["Hc747"])
 interface LanguagePlugin {
 
     val language: String
 
     val greeting: String
+
+    fun meta(): PluginMetaData {
+        return if (this::class.java.isAnnotationPresent(PluginMetaData::class.java))
+            this::class.java.getAnnotation(PluginMetaData::class.java)
+        else
+            LanguagePlugin::class.java.getAnnotation(PluginMetaData::class.java)
+    }
 
 }
 
@@ -50,7 +57,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         PluginService.plugins.forEach {
-            printMeta(it::class.java.getAnnotation(PluginMetaData::class.java))
+            printMeta(it.meta())
             printPlugin(it)
         }
     }
